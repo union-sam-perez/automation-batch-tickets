@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Weekday noon - Shopify unfulfilled orders -> Slack
+
+Parameters:
+  ShopifyShop:
+    Type: String
+  ShopifyAdminToken:
+    Type: String
+    NoEcho: true
+  ShopifyApiVersion:
+    Type: String
+    Default: "2025-10"
+  ShopifyAdminStoreHandle:
+    Type: String
+    Default: ""
+  SlackBotToken:
+    Type: String
+    NoEcho: true
+  SlackChannelId:
+    Type: String
+
+Resources:
+  UnfulfilledOrdersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.12
+      Architectures:
+        - arm64
+      CodeUri: src/
+      Handler: unfulfilled_orders.handler.handler
+      Timeout: 60
+      MemorySize: 256
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Environment:
+        Variables:
+          SHOPIFY_SHOP: !Ref ShopifyShop
+          SHOPIFY_ADMIN_TOKEN: !Ref ShopifyAdminToken
+          SHOPIFY_API_VERSION: !Ref ShopifyApiVersion
+          SHOPIFY_ADMIN_STORE_HANDLE: !Ref ShopifyAdminStoreHandle
+          SLACK_BOT_TOKEN: !Ref SlackBotToken
+          SLACK_CHANNEL_ID: !Ref SlackChannelId
+
+      Events:
+        WeekdayNoon:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: "cron(0 12 ? * MON-FRI *)"
+            ScheduleExpressionTimezone: "America/Chicago"
+            FlexibleTimeWindow:
+              Mode: "OFF"
