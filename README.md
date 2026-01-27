@@ -71,7 +71,6 @@ When deploying, you'll be prompted for:
 - `ShopifyShop` - Shopify store URL
 - `ShopifyAdminToken` - API token (stored securely in AWS)
 - `ShopifyApiVersion` - API version (optional, defaults to 2025-10)
-- `ShopifyAdminStoreHandle` - Store handle (optional, for new-style admin URLs)
 - `SlackBotToken` - Slack bot token (stored securely in AWS)
 - `SlackChannelId` - Target Slack channel
 

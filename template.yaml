@@ -38,7 +38,6 @@ Resources:
           SHOPIFY_SHOP: !Ref ShopifyShop
           SHOPIFY_ADMIN_TOKEN: !Ref ShopifyAdminToken
           SHOPIFY_API_VERSION: !Ref ShopifyApiVersion
-          SHOPIFY_ADMIN_STORE_HANDLE: !Ref ShopifyAdminStoreHandle
           SLACK_BOT_TOKEN: !Ref SlackBotToken
           SLACK_CHANNEL_ID: !Ref SlackChannelId
 

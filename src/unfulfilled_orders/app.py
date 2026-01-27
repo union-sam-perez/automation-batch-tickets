@@ -13,22 +13,22 @@ except Exception:
     pass
 
 
-# Required env
-SHOP = os.getenv("SHOPIFY_SHOP")  # e.g. "your-store.myshopify.com" (hostname)
+
+SHOP = os.getenv("SHOPIFY_SHOP") 
 TOKEN = os.getenv("SHOPIFY_ADMIN_TOKEN")
 SLACK_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 SLACK_CHANNEL = os.getenv("SLACK_CHANNEL_ID")
 
 # Optional env
 API_VER = os.getenv("SHOPIFY_API_VERSION", "2025-10")
-STORE_HANDLE = os.getenv("SHOPIFY_ADMIN_STORE_HANDLE")  # e.g. "9f5fee"
+STORE_HANDLE = os.getenv("SHOPIFY_ADMIN_STORE_HANDLE")  
 LOCAL_TZ = ZoneInfo("America/Chicago")
 
 if not all([SHOP, TOKEN, SLACK_TOKEN, SLACK_CHANNEL]):
     raise RuntimeError("Missing required env vars: SHOPIFY_SHOP, SHOPIFY_ADMIN_TOKEN, SLACK_BOT_TOKEN, SLACK_CHANNEL_ID")
 
 
-# -------- Window: last 30 days but older than 24h (UTC) --------
+
 now_utc = datetime.now(timezone.utc)
 lower = (now_utc - timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
 upper = (now_utc - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -39,7 +39,7 @@ search = (
     f"AND created_at:>={lower} AND created_at:<{upper}"
 )
 
-# -------- GraphQL --------
+
 GQL = """
 query UnfulfilledWindow($q: String!, $first: Int = 50, $after: String) {
   orders(first: $first, after: $after, query: $q, sortKey: CREATED_AT, reverse: true) {
@@ -112,9 +112,9 @@ def build_lines(rows):
         lines.append(f"• <{link}|{r['name']}> — {when} — Financial: `{r['financial']}` — Fulfillment: `{r['fulfillment']}`")
     return header, lines
 
-# ---- Slack helpers (chunking for limits) ----
-MAX_SECTION_CHARS = 2900  # Slack 'section' text object max ~3000 chars; keep margin
-SLEEP_BETWEEN_POSTS = 0.6 # be gentle with rate limits
+
+MAX_SECTION_CHARS = 2900 
+SLEEP_BETWEEN_POSTS = 0.6 
 
 def blocks_from_chunk(header_or_none, body_text):
     blocks = []
@@ -143,26 +143,22 @@ def post_with_chunking(header, lines):
     split lines into <=MAX_SECTION_CHARS chunks and post multiple messages.
     """
     if not lines:
-        # Just post the header (which is actually the "no results" message)
         post_blocks(blocks_from_chunk(None, header), header)
         return 1
 
     body = "\n".join(lines)
-    # Proactive split if too big
     if len(body) <= MAX_SECTION_CHARS:
         try:
             post_blocks(blocks_from_chunk(header, body), header)
             return 1
         except RuntimeError as e:
-            # Fall back to chunking on Slack size errors
             if "msg_too_long" not in str(e) and "invalid_blocks" not in str(e):
                 raise
 
-    # Chunk by characters, respecting line boundaries
     parts = []
     cur, cur_len = [], 0
     for line in lines:
-        add_len = len(line) + 1  # + newline
+        add_len = len(line) + 1 
         if cur_len + add_len > MAX_SECTION_CHARS and cur:
             parts.append("\n".join(cur))
             cur, cur_len = [line], len(line) + 1
@@ -172,7 +168,6 @@ def post_with_chunking(header, lines):
     if cur:
         parts.append("\n".join(cur))
 
-    # Send first message with header; subsequent with "(cont.)"
     count = 0
     for idx, part in enumerate(parts):
         hdr = header if idx == 0 else f"{header} (cont. {idx})"

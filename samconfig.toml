@@ -8,8 +8,9 @@ region = "us-east-2"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 disable_rollback = true
-parameter_overrides = "ShopifyShop=\"9f5fee.myshopify.com\" ShopifyApiVersion=\"2025-10\" ShopifyAdminStoreHandle=\"n\" SlackChannelId=\"slack_bot_tests\""
+parameter_overrides = "ShopifyShop=\"9f5fee.myshopify.com\" ShopifyApiVersion=\"2025-10\" SlackChannelId=\"slack_bot_tests\""
 image_repositories = []
 
 [default.global.parameters]
 region = "us-east-2"
+
