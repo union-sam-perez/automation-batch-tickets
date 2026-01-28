@@ -88,7 +88,6 @@ When deploying, you'll be prompted for:
    SHOPIFY_SHOP=your-store.myshopify.com
    SHOPIFY_ADMIN_TOKEN=your_token_here
    SHOPIFY_API_VERSION=2025-10
-   SHOPIFY_ADMIN_STORE_HANDLE=9f5fee
    SLACK_BOT_TOKEN=xoxb-your-token
    SLACK_CHANNEL_ID=C123456789
    ```
